@@ -5,10 +5,16 @@ const Header = (props) => {
   return <h1>{props.course}</h1>
 } 
 
+const Part = (props) => {
+  return <p> {props.part.name} {props.part.exercises} </p>;
+}
+
 const Content = (props) => {
-  return props.parts.map((part, idx) => {
-    return <p>{part.name} {part.exercises}</p>;
-  }) 
+  return  (
+    <div>
+      {props.parts.map((part) => <Part part={part} />)}
+    </div>
+  );
 }
 
 const Total = (props) => {
