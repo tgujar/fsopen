@@ -22,7 +22,7 @@ const App = (props) => {
 
   return (
     <div>
-      <h2>Ancdote of the day</h2>
+      <h2>Anecdote of the day</h2>
       <p>{props.anecdotes[selected]}</p>
       <p>has {votes[selected]} votes</p>
       <Button handleClick={addVotes} text="vote" />
