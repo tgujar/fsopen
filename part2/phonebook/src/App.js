@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Filter from './components/Filter';
 import Display from './components/Display';
-import PhoneForm from './components/PhoneForm'
+import PhoneForm from './components/PhoneForm';
+import axios from 'axios';
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'tanmay', number: '124-323-4222' },
-    { name: 'vaishali', number: '231-331-3138' },
-    { name: 'tanvi', number: '231-313-1318' }
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [query, search] = useState('');
 
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(phonebook => setPersons(phonebook.data));
+  }, []);
   const addEntry = (e) => {
     e.preventDefault();
     if (persons.some(({ name }) => name.toLowerCase() === newName.toLowerCase())) {
