@@ -8,8 +8,7 @@ const PhoneForm = ({ newName, newPhone, handleSubmit, handleNewName, handleNewPh
       </div>
       <div>
         number: <input type="tel" value={newPhone} onChange={handleNewPhone}
-        required pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" /><br />
-        <small>Format: 123-456-7890</small>
+        required /><br />
       </div>
       <div>
         <button type="submit">add</button>
