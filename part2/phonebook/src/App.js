@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Filter from './components/Filter';
-import Display from './components/Display';
 import PhoneForm from './components/PhoneForm';
-import axios from 'axios';
+import { getAll, create, deleteRecord, update } from './services/persons';
+
+const DeleteButton = ({ handleClick }) => {
+  return <button onClick={handleClick}>Delete</button>
+}
+
+const Contact = ({ name, number }) => {
+  return <span style={{marginRight: "1em"}} key={name}>{name} {number}</span>;
+}
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,20 +18,35 @@ const App = () => {
   const [query, search] = useState('');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(phonebook => setPersons(phonebook.data));
+    getAll().then(phonebook => setPersons(phonebook));
   }, []);
+
   const addEntry = (e) => {
     e.preventDefault();
-    if (persons.some(({ name }) => name.toLowerCase() === newName.toLowerCase())) {
-      alert(`${newName} is already added to phonebook`);
+    const p = persons.find(({ name }) => name.toLowerCase() === newName.toLowerCase());
+    if (p) {
+      if (window.confirm(`${p.name} is already added to the phonebook, replace the old number with new one?`)) {
+        update(p.id, {...p, number: newPhone}).then((data) => {
+          setPersons(persons.map(person => person.id === p.id ? data : person));
+        });
+      }
     } else {
-      setPersons(persons.concat({ name: newName, number: newPhone }));
+      create({ name: newName, number: newPhone })
+        .then(data => {
+          setPersons(persons.concat(data));
+        })
     }
     setNewName('');
     setNewPhone('');
   };
+
+  const deleteEntry = ({id, name}) => {
+    return () => {
+      if (window.confirm(`Delete ${name} ?`)) {
+        deleteRecord(id).then(() => setPersons(persons.filter(person => person.id !== id)));
+      }
+    }
+  }
 
   return (
     <div>
@@ -35,8 +57,17 @@ const App = () => {
       }} handleNewPhone={(e) => {
         setNewPhone(e.target.value);
       }} handleSubmit={addEntry} />
-        <h2>Numbers</h2>
-        <Display persons={persons} filter={query} />
+      <h2>Numbers</h2>
+      {persons
+        .filter(({ name }) => new RegExp("^" + query, "i").test(name))
+        .map(person => {
+          return (
+            <div key={person.id}>
+              <Contact {...person} />
+              <DeleteButton handleClick={deleteEntry(person)} />
+            </div>);
+        })
+      }
     </div>
   )
 }
